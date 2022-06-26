@@ -110,7 +110,7 @@ export default {
   },
   mounted() {
     this.$axios
-      .get("/public/loginUser")
+      .get("/loginUser")
       .then((r) => {
         if (r.data.code == 20001) this.$router.push("/login");
         else if (r.data.code == 0) {

@@ -73,6 +73,12 @@ public class Rest implements Serializable {
         return fail(returnCode.getCode(), returnCode.getMsg(), null);
     }
 
+    public static Rest fail(String msg) {
+        return fail(ReturnCodeEnum.UNKNOWN_ERROR, msg);
+    }
+    public static Rest fail() {
+        return fail(ReturnCodeEnum.UNKNOWN_ERROR);
+    }
     /**
      * 返回错误
      *

@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -20,42 +22,40 @@ import com.example.project.model.User;
 import com.example.project.utils.Rest;
 import com.example.project.utils.ResultStatus;
 import com.example.project.utils.ReturnCodeEnum;
+import com.example.project.utils.SecurityUtils;
 import com.example.project.vobean.UserVo;
-
 
 @Service
 public class UserService {
-	
+
 	@Autowired
 	private UserDao userDao;
 
-	
 	public Rest createUser(UserVo userVo) {
-		
-		if(userVo!=null) {
-			
+
+		if (userVo != null) {
+
 			User user = new User();
 			user.setUserName(userVo.getUserName());
 			user.setEmail(userVo.getUserName());
 			user.setNickName(userVo.getNickName());
-			
+
 			Optional<User> existsUser = userDao.findOne(Example.of(user));
-			
-			
-			if(!existsUser.isPresent()) {
+
+			if (!existsUser.isPresent()) {
 
 				user.setPwd(userVo.getPwd());
 				userDao.save(user);
 				userVo.setId(user.getUserId());
-				
-				//userVo.setPwd(null);
-				//userVo.setPwd2(null);
-				
+
+				// userVo.setPwd(null);
+				// userVo.setPwd2(null);
+
 				return Rest.success(userVo);
 			}
 
 		}
-		return  Rest.fail(ReturnCodeEnum.USER_EXISTS);
+		return Rest.fail(ReturnCodeEnum.USER_EXISTS);
 
 	}
 
@@ -63,13 +63,13 @@ public class UserService {
 		User user = new User();
 		user.setUserName(userVo.getUserName());
 		Optional<User> existsUser = userDao.findOne(Example.of(user));
-		
-		if(existsUser.isPresent()) {
-			
-			if(existsUser.get().getPwd().equals(userVo.getPwd())) {
-				
+
+		if (existsUser.isPresent()) {
+
+			if (existsUser.get().getPwd().equals(userVo.getPwd())) {
+
 				UserVo loginUser = new UserVo();
-				
+
 				BeanUtils.copyProperties(existsUser.get(), loginUser);
 				loginUser.setPwd(null);
 				loginUser.setPwd2(null);
@@ -82,7 +82,7 @@ public class UserService {
 	}
 
 	public List<UserVo> getUsers() {
-		return userDao.findAll().stream().map( e->{
+		return userDao.findAll().stream().map(e -> {
 			UserVo vo = new UserVo();
 			vo.setId(e.getUserId());
 			vo.setUserName(e.getUserName());
@@ -90,5 +90,26 @@ public class UserService {
 		}).collect(Collectors.toList());
 	}
 
+	public Rest changePass(@Valid UserVo userVo) {
+
+		if(!userVo.getPwd().equals(userVo.getPwd2())) {
+			return Rest.fail("两次密码不一致");
+		}
+		Optional<User> userOpt = userDao.findById(SecurityUtils.getCurrentUserId());
+		if (userOpt.isPresent()) {
+
+			User user = userOpt.get();
+			if (user.getPwd().equals(userVo.getOldPwd())) {
+
+				user.setPwd(userVo.getPwd());
+				userDao.save(user);
+
+				return Rest.success();
+			}else return Rest.fail("旧密码错误");
+
+		}
+
+		return  Rest.fail();
+	}
 
 }

@@ -46,11 +46,9 @@ const routes = [
       },
     ],
   },
-  { path: "/login", component: () => import("@/views/Login") },
-  {
-    path: "/login",
-    component: () => import("@/views/Login"),
-  },
+  { path: "/login", component: () => import("@/views/user/Login") },
+  { path: "/reg", component: () => import("@/views/user/Register") },
+  { path: "/forget", component: () => import("@/views/user/ForgetPass") },
 ];
 
 const router = new VueRouter({

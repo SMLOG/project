@@ -17,6 +17,10 @@
                     <p class="text-secondary mb-1">注册时间:</p>
                     <p class="text-muted font-size-sm">上次登录时间:</p>
                     <p class="text-muted font-size-sm">
+                      业主身份:(未认证)
+                      <a class="btn btn-primary btn-sm">申请认证</a>
+                    </p>
+                    <p class="text-muted font-size-sm">
                       <a class="btn btn-warning btn-sm">注销账户</a>
                     </p>
                   </div>
@@ -126,12 +130,13 @@
                         />
                       </div>
                     </div>
-                    <div class="row text-centered">
+                    <div class="row text-center">
                       <div class="col text-secondary">
                         <input
                           type="button"
-                          class="btn btn-primary px-4"
-                          value="保存"
+                          class="btn btn-primary btn-sm px-4"
+                          value="修改密码"
+                          @click="changePass()"
                         />
                       </div>
                     </div>
@@ -231,26 +236,6 @@
                           栋:{{ h.buildNo }} 楼层:{{ h.floorNo }} 单元号:{{
                             h.roomNo
                           }}
-                          状态:{{
-                            h.authStatu == 1
-                              ? "待认证(" +
-                                ((h.appvUserIds &&
-                                  h.appvUserIds.split(",").length) ||
-                                  0) +
-                                "用户已通过)"
-                              : h.authStatu == 2
-                              ? "已认证"
-                              : "未申请"
-                          }}
-                          <span v-if="h.authStatu == 1">
-                            认证码:{{ h.authCode }}</span
-                          >
-                          <a
-                            v-if="h.authStatu == 0"
-                            class="btn btn-primary btn-sm"
-                            @click="requestAuth(h)"
-                            >申请认证</a
-                          >
                           <a
                             class="btn btn-primary btn-sm ms-3 col"
                             @click="removeHouse(h)"
@@ -285,7 +270,7 @@ export default {
   },
   mounted() {
     this.$axios
-      .get("/security/loginUser")
+      .get("/public/loginUser")
       .then((r) => {
         if (r.data.code == 20001) this.$router.push("/login");
         else if (r.data.code == 0) Object.assign(this.loginUser, r.data.data);
@@ -296,6 +281,17 @@ export default {
     this.loadMyHouseList();
   },
   methods: {
+    changePass() {
+      this.$axios
+        .post("/changePass", this.loginUser)
+        .then((r) => {
+          if (r.data.code == 0) alert("修改成功");
+          else alert(r.data.msg);
+        })
+        .catch(() => {
+          alert("发生异常");
+        });
+    },
     loadHouseList() {
       this.$axios.get("/houses").then((r) => {
         this.houses.length = 0;
