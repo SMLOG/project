@@ -1,0 +1,116 @@
+server:
+  port: 8081
+  servlet:
+    context-path: /
+
+# Sa-Token配置
+sa-token:
+  # token名称 (同时也是cookie名称)
+  token-name: satoken
+  # token有效期，单位s 默认30天, -1代表永不过期
+  timeout: 2592000
+  # token临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
+  activity-timeout: -1
+  # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
+  is-share: false
+  # token风格
+  token-style: uuid
+  # 是否输出操作日志
+  is-log: true
+
+
+spring:
+  config:
+    addictional-location: ~/workspace/application-dev.yml
+    name: project
+  web:
+    resources:
+      static-locations: classpath:/static
+  mvc:
+    throw-exception-if-no-handler-found: true
+    view:
+      suffix: .html
+      prefix: /static/
+    static-path-pattern: /static/**
+  jpa:
+    show-sql: true
+    hibernate:
+      dialect: org.hibernate.dialect.MySQL5Dialect
+      physical_naming_strategy: org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy
+      #ddl-auto: none
+      ddl-auto: update
+    generate-ddl: false
+    open-in-view: false
+  datasource:
+    url:  jdbc:mysql://localhost:3306/project?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: password
+
+    druid:
+      validation-query: select 1
+      initial-size: 5
+      filter: stat
+      max-active: 20
+      max-wait: 6000
+      min-idle: 5
+      time-between-eviction-runs-millis: 60000
+      test-while-idle: true
+      test-on-borrow: true
+      test-on-return: false
+      pool-prepared-statements: true
+      max-open-prepared-statements: 20
+      async-init: true
+      keep-alive: true
+      min-evictable-idle-time-millis: 95000
+      max-evictable-idle-time-millis: 100000
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        trace: false
+        web-allow-others: true
+  mail:
+    host: smtp.163.com
+    protocol: smtp
+    default-encoding: UTF-8
+    test-connection: true
+    properties:
+      mail:
+        smtp:
+          auth: true
+          startttls:
+            enable: true
+            require: true
+
+kaptcha:
+  height: 50
+  width: 200
+  content:
+    length: 4
+    source: abcdefghjklmnopqrstuvwxyz23456789
+    space: 2
+  font:
+    color: black
+    name: Arial
+    size: 40
+  background-color:
+    from: lightGray
+    to: white
+  border:
+    enabled: true
+    color: black
+    thickness: 1
+
+security:
+  exclude-uris: /public/**,/api/public/**,/error,/static/**
+
+
+logging:
+  level:
+    web: debug
+
