@@ -15,11 +15,6 @@ const routes = [
     redirect: "/index/1",
     children: [
       {
-        path: "/dashbord",
-        name: "dashboard",
-        component: () => import("@/views/DashBoard"),
-      },
-      {
         path: "/profile",
         name: "用户资料",
         component: () => import("@/views/UserProfile"),
@@ -43,6 +38,12 @@ const routes = [
         name: "voteDetail",
         meta: { name: "投票详情" },
         component: () => import("@/views/VoteDetail"),
+      },
+      {
+        path: "/houses",
+        name: "houses",
+        meta: { name: "房屋信息" },
+        component: () => import("@/views/Houses"),
       },
     ],
   },

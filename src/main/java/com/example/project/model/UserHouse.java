@@ -18,6 +18,9 @@ import lombok.Data;
 @Entity
 @Data
 public class UserHouse extends BaseEntity {
+	public static final Integer NO_AUTH = 0;
+	public static final Integer AUTH_1 = 1;
+	public static final Integer AUTH_2 = 2;
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Integer id;

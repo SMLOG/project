@@ -3,7 +3,44 @@
     <UserHouseAuth />
     <div class="card">
       <div class="card-body">
-        <div class="h5 card-title">最近发生</div>
+        <div class="h5 card-title d-flex justify-content-between">
+          <span>最近发生</span>
+
+          <div class="ms-auto">
+            <ul class="navbar-nav">
+              <li class="nav-item dropdown">
+                <button
+                  class="btn btn-primary btn-sm dropdown-toggle"
+                  type="button"
+                  id="dropdownMenuButton1"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                >
+                  发起
+                </button>
+
+                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                  <li>
+                    <a
+                      @click="$router.push({ path: '/newVote' })"
+                      class="dropdown-item"
+                    >
+                      <i class="bx bx-group" style="margin-right: 10px"></i>投票
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      @click="$router.push({ path: '/newVote' })"
+                      class="dropdown-item"
+                    >
+                      <i class="bx bx-group" style="margin-right: 10px"></i>报名
+                    </a>
+                  </li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
         <div v-for="(post, i) in posts" :key="i">
           <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex" style="min-width: 0">
@@ -16,7 +53,7 @@
               >
             </div>
             <span class="text-muted flex-shrink-0 ms-3">
-              {{ post.createdDate | fmtDate }}
+              {{ post.createDate | fmtDate }}
             </span>
           </div>
           <p class="border-bottom mb-3 pb-3 text-truncate">
@@ -57,82 +94,13 @@
         </nav>
       </section>
     </div>
-    <div class="card my-3">
-      <div class="card-body">
-        <ul class="nav nav-tabs nav-primary" role="tablist">
-          <li
-            v-for="(tab, i) in tabs"
-            class="nav-item"
-            role="presentation"
-            :key="i"
-          >
-            <a
-              class="nav-link"
-              data-bs-toggle="tab"
-              href="#primaryhome"
-              role="tab"
-              aria-selected="true"
-              ><div class="d-flex align-items-center">
-                <div class="tab-icon">
-                  <i class="bx bx-home font-18 me-1"></i>
-                </div>
-                <div class="tab-title">{{ tab.name }}</div>
-              </div></a
-            >
-          </li>
-        </ul>
-        <div class="tab-content py-3">
-          <div
-            class="tab-pane fade active show"
-            id="primaryhome"
-            role="tabpanel"
-          >
-            <p>
-              Raw denim you probably haven't heard of them jean shorts Austin.
-              Nesciunt tofu stumptown aliqua, retro synth master cleanse.
-              Mustache cliche tempor, williamsburg carles vegan helvetica.
-              Reprehenderit butcher retro keffiyeh dreamcatcher synth. Cosby
-              sweater eu banh mi, qui irure terry richardson ex squid. Aliquip
-              placeat salvia cillum iphone. Seitan aliquip quis cardigan
-              american apparel, butcher voluptate nisi.
-            </p>
-          </div>
-          <div class="tab-pane fade" id="primaryprofile" role="tabpanel">
-            <p>
-              Food truck fixie locavore, accusamus mcsweeney's marfa nulla
-              single-origin coffee squid. Exercitation+1 labore velit,blog
-              sartorial PBR leggings next level wes anderson artisan four loko
-              farm-to-table craft beer twee. Qui photo booth letterpress,commodo
-              enim craft beer mlkshk aliquip jean shorts ullamco ad vinyl cillum
-              PBR. Homo nostrud organic,assumenda labore aesthetic magna
-              delectus mollit. Keytar helvetica VHS salvia yr,vero magna velit
-              sapiente labore stumptown. Vegan fanny pack odio cillum wes
-              anderson 8-bit,sustainable jean shorts beard ut DIY ethical culpa
-              terry richardson biodiesel. Art party scenester stumptown,tumblr
-              butcher vero sint qui sapiente accusamus tattooed echo park.
-            </p>
-          </div>
-          <div class="tab-pane fade" id="primarycontact" role="tabpanel">
-            <p>
-              Etsy mixtape wayfarers,ethical wes anderson tofu before they sold
-              out mcsweeney's organic lomo retro fanny pack lo-fi farm-to-table
-              readymade. Messenger bag gentrify pitchfork tattooed craft beer,
-              iphone skateboard locavore carles etsy salvia banksy hoodie
-              helvetica. DIY synth PBR banksy irony. Leggings gentrify squid
-              8-bit cred pitchfork. Williamsburg banh mi whatever gluten-free,
-              carles pitchfork biodiesel fixie etsy retro mlkshk vice blog.
-              Scenester cred you probably haven't heard of them,vinyl craft beer
-              blog stumptown. Pitchfork sustainable tofu synth chambray yr.
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
+    <DashBoard />
   </div>
 </template>
 
 <script>
 import UserHouseAuth from "@/components/UserHouseAuth";
+import DashBoard from "@/components/DashBoard";
 
 export default {
   data() {
@@ -149,14 +117,28 @@ export default {
         { name: "业主大会会议筹备组" },
         { name: "选举业主委员会" },
         { name: "首次成立业主大会" },
-        { name: "电子投票" },
       ],
     };
   },
-  components: { UserHouseAuth },
+  components: { UserHouseAuth, DashBoard },
   filters: {
-    fmtDate(date) {
-      return date.substr(5);
+    fmtDate(dateTime) {
+      const d = new Date(dateTime);
+      const now = Date.now();
+
+      const diff = (now - d) / 1000;
+
+      if (diff < 30) {
+        return "刚刚";
+      } else if (diff < 3600) {
+        // less 1 hour
+        return Math.ceil(diff / 60) + "分钟前";
+      } else if (diff < 3600 * 24) {
+        return Math.ceil(diff / 3600) + "小时前";
+      } else if (diff < 3600 * 24 * 2) {
+        return "1天前";
+      }
+      return d.getMonth() + 1 + "-" + d.getDate();
     },
   },
   mounted() {

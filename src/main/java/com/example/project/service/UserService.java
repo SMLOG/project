@@ -6,18 +6,24 @@
  */
 package com.example.project.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.example.project.dao.SysParamDao;
 import com.example.project.dao.UserDao;
+import com.example.project.model.SysParam;
 import com.example.project.model.User;
 import com.example.project.utils.Rest;
 import com.example.project.utils.ResultStatus;
@@ -31,27 +37,46 @@ public class UserService {
 	@Autowired
 	private UserDao userDao;
 
-	public Rest createUser(UserVo userVo) {
+	@Autowired
+	private SysParamDao sysParamDao;
+
+	@Resource
+	private PasswordEncoder passwordEncoder;  //注入bcryct加密
+	
+	public Rest registerUser(UserVo userVo) {
 
 		if (userVo != null) {
 
-			User user = new User();
-			user.setUserName(userVo.getUserName());
-			user.setEmail(userVo.getUserName());
-			user.setNickName(userVo.getNickName());
+			SysParam param = new SysParam();
+			param.setName("inviteCode");
 
-			Optional<User> existsUser = userDao.findOne(Example.of(user));
+			Optional<SysParam> paramOpt = sysParamDao.findOne(Example.of(param));
+			if (!paramOpt.isPresent() || paramOpt.get().getValue().equals(userVo.getInviteCode())) {
 
-			if (!existsUser.isPresent()) {
+				User user = new User();
+				user.setUserName(userVo.getUserName());
+				// user.setEmail(userVo.getUserName());
+				
 
-				user.setPwd(userVo.getPwd());
-				userDao.save(user);
-				userVo.setId(user.getUserId());
+				Optional<User> existsUser = userDao.findOne(Example.of(user));
 
-				// userVo.setPwd(null);
-				// userVo.setPwd2(null);
+				if (!existsUser.isPresent() || existsUser.get().getStatus().intValue() == User.PENDING.intValue()) {
 
-				return Rest.success(userVo);
+					user.setNickName(userVo.getNickName());
+					user.setStatus(User.PENDING);
+					user.setPwd(passwordEncoder.encode(userVo.getPwd()));
+					userDao.save(user);
+					userVo.setId(user.getUserId());
+
+					// userVo.setPwd(null);
+					// userVo.setPwd2(null);
+
+					return Rest.success(userVo);
+				}else {
+					return Rest.fail("该手机号码已经注册过了,请登录。");
+
+				}
+
 			}
 
 		}
@@ -62,19 +87,18 @@ public class UserService {
 	public UserVo login(UserVo userVo) {
 		User user = new User();
 		user.setUserName(userVo.getUserName());
-		Optional<User> existsUser = userDao.findOne(Example.of(user));
+		Optional<User> userOpt = userDao.findOne(Example.of(user));
 
-		if (existsUser.isPresent()) {
+		if (userOpt.isPresent()) {
 
-			if (existsUser.get().getPwd().equals(userVo.getPwd())) {
+			user = userOpt.get();
+			if (passwordEncoder.matches(userVo.getPwd(),user.getPwd())) {
 
-				UserVo loginUser = new UserVo();
-
-				BeanUtils.copyProperties(existsUser.get(), loginUser);
-				loginUser.setPwd(null);
-				loginUser.setPwd2(null);
-				loginUser.setId(existsUser.get().getUserId());
-
+				user.setLastLoginTime(user.getLoginTime());
+				user.setLoginTime(LocalDateTime.now());
+				UserVo loginUser = SecurityUtils.userToVo(userOpt.get());
+				userDao.save(user);
+				
 				return loginUser;
 			}
 		}
@@ -92,7 +116,7 @@ public class UserService {
 
 	public Rest changePass(@Valid UserVo userVo) {
 
-		if(!userVo.getPwd().equals(userVo.getPwd2())) {
+		if (!userVo.getPwd().equals(userVo.getPwd2())) {
 			return Rest.fail("两次密码不一致");
 		}
 		Optional<User> userOpt = userDao.findById(SecurityUtils.getCurrentUserId());
@@ -105,11 +129,12 @@ public class UserService {
 				userDao.save(user);
 
 				return Rest.success();
-			}else return Rest.fail("旧密码错误");
+			} else
+				return Rest.fail("旧密码错误");
 
 		}
 
-		return  Rest.fail();
+		return Rest.fail();
 	}
 
 }

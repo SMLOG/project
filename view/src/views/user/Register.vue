@@ -3,7 +3,7 @@
     <div class="container-fluid">
       <div class="row justify-content-center" style="height: 100vh">
         <div class="align-self-center">
-          <b-container fluid class="p-0" v-if="!checkMail">
+          <b-container fluid class="p-0">
             <div class="row">
               <div class="col-sm-12 col-md-8 col-lg-6 mx-auto">
                 <b-card>
@@ -14,30 +14,41 @@
                     ref="form"
                   >
                     <div class="form-group pb-3">
-                      <label for="userName">用户名</label>
+                      <label for="userName">手机号码</label>
                       <input
-                        type="email"
+                        type="number"
                         class="form-control"
                         id="userName"
-                        placeholder="邮件地址,比如 test@163.com"
+                        placeholder="手机号码"
                         v-model="loginUser.userName"
                         required
                       />
-                      <div class="invalid-feedback">请输入正确的邮件地址.</div>
+                      <div class="invalid-feedback">请输入正确的手机号码.</div>
                     </div>
                     <div class="form-group pb-3">
-                      <label for="userName">邀请码</label>
+                      <label for="nickName">你的称呼</label>
                       <input
                         type="text"
                         class="form-control"
                         id="nickName"
+                        placeholder="比如,李先生，王女士"
+                        v-model="loginUser.nickName"
+                        required
+                      />
+                    </div>
+                    <div class="form-group pb-3">
+                      <label for="inviteCode">邀请码</label>
+                      <input
+                        type="text"
+                        class="form-control"
+                        id="inviteCode"
                         placeholder="请输入邀请码"
                         v-model="loginUser.inviteCode"
                         required
                       />
                     </div>
                     <div class="form-group pb-3">
-                      <label for="pwd">密码</label>
+                      <label for="pwd">设置密码</label>
                       <input
                         type="password"
                         class="form-control"
@@ -62,15 +73,15 @@
                     </div>
 
                     <div class="form-group pb-3">
-                      <label for="pwd2">验证码</label>
+                      <label for="pwd2">图片验证码</label>
                       <input
                         class="form-control"
                         id="captcha"
-                        placeholder="验证码"
+                        placeholder="图片验证码"
                         v-model="loginUser.captcha"
                         required
                       />
-                      <div class="invalid-feedback">请输入验证码.</div>
+                      <div class="invalid-feedback">请输入图片验证码.</div>
 
                       <img ref="captch" @click="getCaptch()" />
                     </div>
@@ -96,15 +107,6 @@
               </div>
             </div>
           </b-container>
-          <div class="container" v-if="checkMail">
-            <div class="card">
-              <p class="card-body">
-                验证信息已经发送到你的邮箱地址:{{
-                  loginUser.userName
-                }},请前往激活。<a @click="checkMail = 0">返回登录</a>
-              </p>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -142,7 +144,9 @@ export default {
             this.loading = false;
             let code = response.data.code;
             if (code == 0) {
-              this.checkMail = 1;
+              this.$router.push({
+                path: "/profile",
+              });
             } else {
               alert(response.data.msg);
             }

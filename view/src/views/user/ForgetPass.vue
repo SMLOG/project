@@ -14,32 +14,51 @@
                     ref="form"
                   >
                     <div class="form-group pb-3">
-                      <label for="userName">用户名</label>
+                      <label for="userName">手机号码</label>
                       <input
                         type="email"
                         class="form-control"
                         id="userName"
-                        placeholder="邮件地址,比如 test@163.com"
+                        placeholder="手机号码"
                         v-model="loginUser.userName"
                         required
                       />
-                      <div class="invalid-feedback">请输入正确的邮件地址.</div>
+                      <div class="invalid-feedback">请输入正确的手机号码.</div>
                     </div>
 
                     <div class="form-group pb-3">
-                      <label for="pwd2">验证码</label>
+                      <label for="pwd2">图片验证码</label>
                       <input
                         class="form-control"
                         id="captcha"
-                        placeholder="验证码"
+                        placeholder="图片验证码"
                         v-model="loginUser.captcha"
                         required
                       />
-                      <div class="invalid-feedback">请输入验证码.</div>
+                      <div class="invalid-feedback">请输入图片验证码.</div>
 
                       <img ref="captch" @click="getCaptch()" />
                     </div>
 
+                    <div class="form-group pb-3">
+                      <label
+                        for="telcaptcha"
+                        @click="gettelcaptcha = !gettelcaptcha"
+                        >已收到手机验证码</label
+                      >
+                      <input
+                        class="form-control"
+                        id="telcaptcha"
+                        placeholder="收到的手机验证码"
+                        v-model="loginUser.telcaptcha"
+                        required
+                        v-if="gettelcaptcha"
+                      />
+
+                      <div class="invalid-feedback" v-if="gettelcaptcha">
+                        请输入收到的手机验证码.
+                      </div>
+                    </div>
                     <div class="my-3">
                       <span>
                         <span class="text-muted">再试一下?</span
@@ -53,7 +72,7 @@
                           type="button"
                           class="btn btn-primary btn-sm"
                         >
-                          发送重设密码链接到注册的邮件地址
+                          发送重设密码手机验证码到注册的手机号码
                         </button>
                       </div>
                     </div>
@@ -72,6 +91,7 @@
 export default {
   data() {
     return {
+      gettelcaptcha: 0,
       loginUser: {
         userName: "",
         pwd: "",

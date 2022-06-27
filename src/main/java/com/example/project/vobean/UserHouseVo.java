@@ -7,6 +7,7 @@
 package com.example.project.vobean;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import lombok.Data;
 
@@ -26,5 +27,6 @@ public class UserHouseVo {
 	private Integer m2;
 	private Integer ownerId;
 	private String appvUserIds;
+	private List<UserVo> binderUsers;
 
 }

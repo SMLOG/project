@@ -6,6 +6,8 @@
  */
 package com.example.project.model;
 
+import java.time.LocalDateTime;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,9 +18,13 @@ import javax.persistence.Table;
 import lombok.Data;
 
 @Entity
-@Table(name = "USER")
 @Data
 public class User extends BaseEntity {
+	public static final Integer PENDING = 0;
+	public static final Integer TELVALID = 1;
+	public static final Integer HOUSEALID1 = 2;
+	public static final Integer HOUSEALID2 = 4;
+	
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer userId;
@@ -27,5 +33,9 @@ public class User extends BaseEntity {
 	private String email;
 	private String nickName;
 	private String tel;
+	private Integer authNum;
+	private Integer status;
+	private LocalDateTime lastLoginTime;
+	private LocalDateTime loginTime;
 
 }

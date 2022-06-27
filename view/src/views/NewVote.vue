@@ -119,7 +119,7 @@ export default {
         .post("/vote", { vote: this.vote, voteOpts: this.voteOpts })
         .then((r) => {
           if (r.data.code == 0) {
-            this.$router.push("/index");
+            this.$router.push("/index/1");
           }
         });
     },

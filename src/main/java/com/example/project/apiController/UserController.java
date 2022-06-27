@@ -28,6 +28,7 @@ import com.example.project.service.SendEmailService;
 import com.example.project.service.UserService;
 import com.example.project.utils.Rest;
 import com.example.project.utils.ReturnCodeEnum;
+import com.example.project.utils.SecurityUtils;
 import com.example.project.vobean.UserVo;
 
 import cn.dev33.satoken.stp.StpUtil;
@@ -62,15 +63,21 @@ public class UserController {
 
 		}
 
-		int  code = new Random().nextInt(9000000)+1000000;
+	//	int  code = new Random().nextInt(9000000)+1000000;
 		
 		
-		emailService.sendHtmlEmail(userVo.getUserName(),"验证你的账号", String.format( "请点击下面链接验证你的<a href=\"http://localhost:8082/project/public/verify?id=%d\">http://localhost:8082/project/public/verify?id=%d</a>",code,code));
+	//	emailService.sendHtmlEmail(userVo.getUserName(),"验证你的账号", String.format( "请点击下面链接验证你的<a href=\"http://localhost:8082/project/public/verify?id=%d\">http://localhost:8082/project/public/verify?id=%d</a>",code,code));
 	    
-		request.getServletContext().setAttribute(""+code, userVo);
+	//	request.getServletContext().setAttribute(""+code, userVo);
 		
+		Rest status = userService.registerUser(userVo);
 		
-		return Rest.success();
+		if(status.isOK()) {
+			
+			return login2(userVo);
+
+		}
+		else return status;
 		
 
 	}
@@ -79,7 +86,7 @@ public class UserController {
 	public Rest veryfyEmail(HttpServletRequest req,@RequestParam(name="id") String code) {
 		
 		UserVo userVo = (UserVo) req.getServletContext().getAttribute(code);
-		Rest status = userService.createUser(userVo);
+		Rest status = userService.registerUser(userVo);
 		
 		if(status.isOK()) {
 			
@@ -114,11 +121,7 @@ public class UserController {
 	private Rest login2(UserVo userVo) {
 		UserVo user = userService.login(userVo);
         if (user != null) {
-            StpUtil.login(user.getUserName(),true);
-            Map<String, Object> result = new HashMap<>();
-            result.put("token", StpUtil.getTokenInfo());
-            result.put("user", user);
-            StpUtil.getSession().set("user", user);
+        	Map<String, Object> result = SecurityUtils.bindUserToSession(user);
             return Rest.success(result);
         }
 		return Rest.fail(ReturnCodeEnum.USER_NAME_OR_PWD_ERROR);

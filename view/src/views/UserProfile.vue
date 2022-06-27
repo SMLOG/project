@@ -6,22 +6,129 @@
           <div class="col-lg-4">
             <div class="card mb-3">
               <div class="card-body">
-                <div class="d-flex flex-column align-items-center text-center">
+                <div class="">
                   <font-awesome-icon
                     icon="fa-solid fa-user"
                     class="rounded-circle p-1 bg-primary"
                   />
 
                   <div class="mt-3">
-                    <h4>{{ loginUser.userName }}</h4>
-                    <p class="text-secondary mb-1">注册时间:</p>
-                    <p class="text-muted font-size-sm">上次登录时间:</p>
-                    <p class="text-muted font-size-sm">
-                      业主身份:(未认证)
-                      <a class="btn btn-primary btn-sm">申请认证</a>
+                    <p
+                      class="text-secondary mb-1 d-flex justify-content-between"
+                    >
+                      <span>注册时间:</span
+                      ><span>{{ loginUser.createDate | fmtDate }}</span>
                     </p>
-                    <p class="text-muted font-size-sm">
-                      <a class="btn btn-warning btn-sm">注销账户</a>
+                    <p
+                      class="
+                        text-muted
+                        font-size-sm
+                        d-flex
+                        justify-content-between
+                      "
+                    >
+                      <span>上次登录时间:</span
+                      ><span>{{ loginUser.lastLoginTime | fmtTime }}</span>
+                    </p>
+                    <div class="d-flex justify-content-between">
+                      <span>
+                        业主房产:<em v-if="myHouses.length > 0"
+                          >已绑定 认证码:{{ loginUser.authNum }}</em
+                        ><em v-else>未绑定</em></span
+                      >
+                      <button
+                        v-if="myHouses.length == 0"
+                        type="button"
+                        class="btn btn-primary btn-sm"
+                        data-bs-toggle="modal"
+                        data-bs-target="#houseModal"
+                        @click="loadHouseList()"
+                      >
+                        绑定房产
+                      </button>
+                      <div
+                        class="modal fade"
+                        id="houseModal"
+                        tabindex="-1"
+                        aria-labelledby="houseModalLabel"
+                        aria-hidden="true"
+                      >
+                        <div class="modal-dialog modal-dialog-scrollable">
+                          <div class="modal-content">
+                            <div class="modal-header">
+                              <h5 class="modal-title" id="houseModalLabel">
+                                选择你要绑定的房子
+                              </h5>
+                              <button
+                                type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              ></button>
+                            </div>
+                            <div class="modal-body">
+                              <div>
+                                <div>
+                                  <table
+                                    class="
+                                      table
+                                      table-responsive
+                                      table-striped
+                                      table-hover
+                                      table-sm
+                                    "
+                                  >
+                                    <thead>
+                                      <th>栋号</th>
+                                      <th>楼层号</th>
+                                      <th>房号</th>
+                                      <th>选中</th>
+                                    </thead>
+                                    <tbody>
+                                      <tr v-for="(h, i) in houses" :key="i">
+                                        <td>栋号:{{ h.buildNo }}</td>
+                                        <td>楼层:{{ h.floorNo }}</td>
+                                        <td>
+                                          单元号:{{ h.roomNo }}
+                                          <span v-if="h.binderIds">*</span>
+                                        </td>
+
+                                        <td>
+                                          <input
+                                            :value="i"
+                                            v-model="selectHouseIds"
+                                            class="form-check"
+                                            type="checkbox"
+                                          />
+                                        </td>
+                                      </tr>
+                                    </tbody>
+                                  </table>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="modal-footer">
+                              <button
+                                type="button"
+                                class="btn btn-secondary"
+                                data-bs-dismiss="modal"
+                              >
+                                关闭</button
+                              ><button
+                                type="button"
+                                class="btn btn-primary"
+                                @click="bindHouses()"
+                                :disabled="selectHouseIds.length == 0"
+                              >
+                                绑定选中的{{ selectHouseIds.length }}个房号
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <p class="text-muted font-size-sm text-start mt-3">
+                      <a class="btn btn-warning btn-sm">注销账号</a>
                     </p>
                   </div>
                 </div>
@@ -71,18 +178,6 @@
                       </div>
                     </div>
 
-                    <div class="row mb-3">
-                      <div class="col-sm-3">
-                        <h6 class="mb-0">电子邮件地址</h6>
-                      </div>
-                      <div class="col-sm-9 text-secondary">
-                        <input
-                          type="email"
-                          v-model="loginUser.email"
-                          class="form-control"
-                        />
-                      </div>
-                    </div>
                     <div class="row text-centered">
                       <div class="col text-secondary">
                         <input
@@ -144,103 +239,33 @@
                 </div>
               </div>
             </div>
-            <div class="row">
+            <div class="row" v-if="myHouses.length > 0">
               <div class="col-sm-12">
                 <div class="card mb-3">
                   <div class="card-body">
                     <div class="d-flex align-items-center mb-3">
-                      <div class="pe-3 h5">房产</div>
+                      <div class="pe-3 h5">已绑定房产</div>
                       <div class="ms-auto">
                         <div class="btn-group">
-                          <button
-                            type="button"
-                            class="btn btn-primary btn-sm"
-                            data-bs-toggle="modal"
-                            data-bs-target="#houseModal"
-                            @click="loadHouseList()"
+                          <a
+                            class="bt btn-sm btn-primariy"
+                            @click="unBindHouses()"
+                            >解绑定</a
                           >
-                            添加房产
-                          </button>
-                          <div
-                            class="modal fade"
-                            id="houseModal"
-                            tabindex="-1"
-                            aria-labelledby="houseModalLabel"
-                            aria-hidden="true"
-                          >
-                            <div class="modal-dialog modal-dialog-scrollable">
-                              <div class="modal-content">
-                                <div class="modal-header">
-                                  <h5 class="modal-title" id="houseModalLabel">
-                                    选择你的房子
-                                  </h5>
-                                  <button
-                                    type="button"
-                                    class="btn-close"
-                                    data-bs-dismiss="modal"
-                                    aria-label="Close"
-                                  ></button>
-                                </div>
-                                <div class="modal-body">
-                                  <div>
-                                    <div>
-                                      <ul class="list-group">
-                                        <li
-                                          v-for="h in houses"
-                                          class="list-group-item"
-                                          :key="h.houseId"
-                                        >
-                                          <input
-                                            type="radio"
-                                            name="selectHouse"
-                                            :value="h.houseId"
-                                            v-model="selectHouseId"
-                                          />
-                                          栋:{{ h.buildNo }} 楼层:{{
-                                            h.floorNo
-                                          }}
-                                          单元号:{{ h.roomNo }}
-                                        </li>
-                                      </ul>
-                                    </div>
-                                  </div>
-                                </div>
-                                <div class="modal-footer">
-                                  <button
-                                    type="button"
-                                    class="btn btn-secondary"
-                                    data-bs-dismiss="modal"
-                                  >
-                                    关闭</button
-                                  ><button
-                                    type="button"
-                                    class="btn btn-primary"
-                                    @click="addHouse()"
-                                  >
-                                    添加
-                                  </button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
                         </div>
                       </div>
                     </div>
                     <div class="list-group list-group-flush">
+                      <div>已绑定下面房产,但还没认证。</div>
                       <div
                         class="list-group-item px-0"
                         v-for="h in myHouses"
                         :key="h.id"
                       >
                         <div>
-                          栋:{{ h.buildNo }} 楼层:{{ h.floorNo }} 单元号:{{
+                          栋号:{{ h.buildNo }} 楼层:{{ h.floorNo }} 单元号:{{
                             h.roomNo
                           }}
-                          <a
-                            class="btn btn-primary btn-sm ms-3 col"
-                            @click="removeHouse(h)"
-                            >删除</a
-                          >
                         </div>
                       </div>
                     </div>
@@ -262,25 +287,54 @@ export default {
   components: {},
   data() {
     return {
-      selectHouseId: null,
+      selectHouseIds: [],
       myHouses: [],
       houses: [],
       loginUser: {},
     };
   },
+  filters: {
+    fmtDate(date) {
+      if (date) {
+        let d = new Date();
+        return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+      }
+      return "";
+    },
+    fmtTime(date) {
+      if (date) {
+        let d = new Date();
+        return (
+          d.getFullYear() +
+          "-" +
+          (d.getMonth() + 1) +
+          "-" +
+          d.getDate() +
+          " " +
+          d.getHours() +
+          ":" +
+          d.getMinutes()
+        );
+      }
+      return "";
+    },
+  },
   mounted() {
-    this.$axios
-      .get("/public/loginUser")
-      .then((r) => {
-        if (r.data.code == 20001) this.$router.push("/login");
-        else if (r.data.code == 0) Object.assign(this.loginUser, r.data.data);
-      })
-      .catch(() => {
-        this.$router.push("/login");
-      });
+    this.loadUserInfo();
     this.loadMyHouseList();
   },
   methods: {
+    loadUserInfo() {
+      this.$axios
+        .get("/loginUser")
+        .then((r) => {
+          if (r.data.code == 20001) this.$router.push("/login");
+          else if (r.data.code == 0) Object.assign(this.loginUser, r.data.data);
+        })
+        .catch(() => {
+          this.$router.push("/login");
+        });
+    },
     changePass() {
       this.$axios
         .post("/changePass", this.loginUser)
@@ -314,39 +368,41 @@ export default {
         }
       });
     },
-    removeHouse(h) {
-      if (confirm("确定删除？"))
-        this.$axios.post("/removeMyHouse", h).then((r) => {
+    unBindHouses() {
+      if (confirm("确定解绑所有房子？"))
+        this.$axios.post("/unBindHouses").then((r) => {
           if (r.data.code == 0) {
             this.loadMyHouseList();
+            this.loadUserInfo();
           }
         });
     },
-    addHouse() {
-      this.$axios
-        .post("/addMyHouse", { houseId: this.selectHouseId })
-        .then((r) => {
-          if (r.data.code == 0) {
-            $("#houseModal").modal("hide");
-            this.loadMyHouseList();
-          }
-        });
-    },
-    onSubmit(evt) {
-      evt.preventDefault();
-      alert(JSON.stringify(this.form));
-    },
-    onReset(evt) {
-      evt.preventDefault();
-      // Reset our form values
-      this.form.email = "";
-      this.form.name = "";
-      this.form.food = null;
-      this.form.checked = [];
-      // Trick to reset/clear native browser form validation state
-      this.show = false;
-      this.$nextTick(() => {
-        this.show = true;
+    bindHouses() {
+      let bhs = this.houses.filter(
+        (e, i) => this.selectHouseIds.indexOf(i) > -1
+      );
+
+      console.log(bhs);
+      let checks = bhs.filter(
+        (e) =>
+          e.binderIds &&
+          e.binderIds.split(",").filter((ee) => ee.trim()).length > 0
+      );
+      if (checks.length > 0) {
+        if (
+          !confirm(
+            checks.map((e) => e.roomNo).join(",") +
+              " 已经有人绑定,确定要继续吗？"
+          )
+        )
+          return;
+      }
+      this.$axios.post("/bindHouses", bhs).then((r) => {
+        if (r.data.code == 0) {
+          $("#houseModal").modal("hide");
+          this.loadMyHouseList();
+          this.loadUserInfo();
+        }
       });
     },
   },

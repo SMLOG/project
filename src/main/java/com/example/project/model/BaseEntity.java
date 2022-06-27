@@ -6,7 +6,7 @@
  */
 package com.example.project.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.persistence.EntityListeners;
 import javax.persistence.MappedSuperclass;
@@ -25,12 +25,12 @@ import lombok.Data;
 public abstract class BaseEntity {
 
 	@CreatedDate
-	private LocalDate createdDate;
+	private LocalDateTime createDate;
 	@CreatedBy
-	private Integer createdBy;
+	private Integer createBy;
 	@LastModifiedBy
-	private Integer lastModifiedBy;
+	private Integer updateBy;
 	@LastModifiedDate
-	private LocalDate lastModifiedDate;
+	private LocalDateTime udateDate;
 	
 }

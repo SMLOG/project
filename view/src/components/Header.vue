@@ -2,7 +2,7 @@
   <!--start header -->
   <header>
     <div class="topbar d-flex align-items-center">
-      <nav class="navbar navbar-expand">
+      <nav class="navbar navbar-expand d-flex justify-content-between">
         <div>
           <ol class="breadcrumb">
             <li class="breadcrumb-item">
@@ -19,36 +19,11 @@
             </li>
           </ol>
         </div>
-        <div class="ms-auto">
-          <ul class="navbar-nav">
-            <li class="nav-item dropdown" v-if="navName == ''">
-              <button
-                class="btn btn-primary btn-sm dropdown-toggle"
-                type="button"
-                id="dropdownMenuButton1"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-              >
-                发起
-              </button>
 
-              <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                <li>
-                  <a
-                    @click="$router.push({ path: '/newVote' })"
-                    class="dropdown-item"
-                  >
-                    <i class="bx bx-group" style="margin-right: 10px"></i>投票
-                  </a>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </div>
         <div class="user-box">
           <div class="dropdown">
             <a
-              class="d-flex align-items-center nav-link dropdown-toggle"
+              class="d-flex pe-0 align-items-center nav-link dropdown-toggle"
               href="#"
               role="button"
               data-bs-toggle="dropdown"
@@ -57,7 +32,7 @@
               <div class="user-info">
                 <p class="user-name mb-0">
                   <font-awesome-icon icon="fa-solid fa-user" size="xs" />
-                  {{ userName }}
+                  {{ userName }}({{ nickName }})
                 </p>
               </div>
             </a>
@@ -106,6 +81,7 @@ export default {
   data() {
     return {
       userName: "no login",
+      nickName: "",
     };
   },
   mounted() {
@@ -115,6 +91,7 @@ export default {
         if (r.data.code == 20001) this.$router.push("/login");
         else if (r.data.code == 0) {
           this.userName = r.data.data.userName;
+          this.nickName = r.data.data.nickName;
           this.$store.commit("userId", r.data.data.userId);
         }
       })
@@ -124,7 +101,7 @@ export default {
   },
   methods: {
     logout() {
-      this.$axios.get("/public/logout").then(() => {
+      this.$axios.get("/logout").then(() => {
         this.$router.push({ path: "/login" });
       });
     },

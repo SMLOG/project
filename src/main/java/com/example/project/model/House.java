@@ -24,5 +24,6 @@ public class House extends BaseEntity {
 	private String roomNo;
 	private Integer m2;
 	private Integer ownerId;
+	private String binderIds;
 
 }

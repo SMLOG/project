@@ -50,10 +50,10 @@ public class HouseController {
 
 	}
 	
-	@RequestMapping("/addMyHouse")
-	public Rest addMyHouse(@RequestBody  House house) {
+	@RequestMapping("/bindHouses")
+	public Rest addMyHouse(@RequestBody  List<House> houses) {
 
-		return Rest.success(houseService.addMyHouse(house));
+		return Rest.success(houseService.userBindHouses(houses));
 
 	}
 	@RequestMapping("/myHouses")
@@ -62,10 +62,10 @@ public class HouseController {
 		return Rest.success(houseService.myHouses());
 
 	}
-	@RequestMapping("/removeMyHouse")
-	public Rest removeMyHouse(@RequestBody  House house) {
+	@RequestMapping("/unBindHouses")
+	public Rest unBindHouses() {
 
-		return Rest.success(houseService.removeMyHouse(house));
+		return Rest.success(houseService.unBindUserHouses());
 
 	}
 	

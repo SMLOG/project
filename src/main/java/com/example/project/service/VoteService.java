@@ -76,7 +76,7 @@ public class VoteService {
 
 	public Object getVotes(int page) {
 
-		Sort sort = Sort.by(Sort.Direction.DESC, "createdDate");
+		Sort sort = Sort.by(Sort.Direction.DESC, "createDate");
 		PageRequest pr = PageRequest.of(page, 10, sort);
 		return voteDao.findAll(pr);
 	}
