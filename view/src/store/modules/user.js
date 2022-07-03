@@ -5,12 +5,10 @@ const user = {
     navName: "",
   },
   mutations: {
-    updateUser(state, user) {
+    loginUser(state, user) {
       state.loginUser = user;
     },
-    userId(state, userId) {
-      state.userId = userId;
-    },
+
     updateNavName(state, navName) {
       state.navName = navName;
       console.log(navName);

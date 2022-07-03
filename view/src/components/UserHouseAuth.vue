@@ -3,19 +3,24 @@
     <div class="card mb-3" v-if="authReqs.length > 0">
       <div class="card-body">
         <div class="h5 card-title">待验证绑定的房产</div>
-        <div class="row">
+        <div>
           <ol class="list-group list-group-flush">
             <li
-              class="list-group-item"
-              v-for="auth in authReqs"
+              class="list-group-item p-0"
+              v-for="(auth, i) in authReqs"
               :key="auth.userId"
             >
               <div class="">
-                <div class="d-flex justify-content-between align-items-center">
-                  <span
-                    >{{ auth.user.nickName }}(***{{ auth.user.userName }})
-                    绑定了以下房产:</span
-                  >
+                <div
+                  class="d-flex justify-content-between align-items-center mt-3"
+                >
+                  <div>
+                    <span class="badge bg-secondary me-1">{{ i + 1 }}</span>
+                    <span
+                      >{{ auth.user.nickName }}(***{{ auth.user.userName }})
+                      绑定了以下房产:</span
+                    >
+                  </div>
                   <a
                     class="btn btn-primary btn-sm flex-shrink-0"
                     data-bs-toggle="modal"
@@ -25,10 +30,10 @@
                   >
                 </div>
               </div>
-              <div class="d-flex justify-content-between align-items-center">
-                <div>
-                  <div v-for="uh in auth.list" :key="uh.id">
-                    栋 {{ uh.buildNo }} 楼层 {{ uh.floorNo }} 单元号
+              <div>
+                <div class="userhouses">
+                  <div v-for="uh in auth.list" :key="uh.id" class="houseItem">
+                    - 栋 {{ uh.buildNo }} 楼层 {{ uh.floorNo }} 单元号
                     {{ uh.roomNo }}
                     <div v-if="uh.binderUsers.length > 1" class="text-danger">
                       (
@@ -159,3 +164,12 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.houseItem {
+  padding: 1rem 0.5rem;
+}
+.userhouses > .houseItem:not(:last-child) {
+  border-bottom: 1px dashed #ccc;
+}
+</style>

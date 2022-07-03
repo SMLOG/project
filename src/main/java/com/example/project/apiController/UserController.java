@@ -7,6 +7,7 @@
 package com.example.project.apiController;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.baomidou.kaptcha.Kaptcha;
+import com.example.project.model.House;
 import com.example.project.service.SendEmailService;
 import com.example.project.service.UserService;
 import com.example.project.utils.Rest;
@@ -152,5 +154,14 @@ public class UserController {
     	return userService.changePass(userVo);
 
     }
-    
+    @PostMapping("/api/unRegist")
+    public Rest unRegist(@RequestBody @Valid UserVo userVo) {
+    		
+    	return userService.unRegist(userVo);
+
+    }
+    @PostMapping("/api/userMap")
+	public Rest getUsersIdUserName() {
+		return userService.getUsersIdUserName();
+	}
 }

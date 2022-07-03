@@ -1,23 +1,30 @@
 <template>
   <div class="page-content">
-    <UserHouseAuth />
+    <UserHouseAuth v-if="loginUser.status > 1" />
     <div class="card">
       <div class="card-body">
-        <div class="h5 card-title d-flex justify-content-between">
+        <div
+          class="
+            h5
+            card-title
+            d-flex
+            justify-content-between
+            align-items-center
+          "
+        >
           <span>最近发生</span>
 
           <div class="ms-auto">
             <ul class="navbar-nav">
               <li class="nav-item dropdown">
-                <button
-                  class="btn btn-primary btn-sm dropdown-toggle"
-                  type="button"
+                <span
+                  class="btn"
                   id="dropdownMenuButton1"
                   data-bs-toggle="dropdown"
                   aria-expanded="false"
                 >
-                  发起
-                </button>
+                  <font-awesome-icon icon="fa-solid fa-circle-plus" />发布
+                </span>
 
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                   <li>
@@ -30,10 +37,18 @@
                   </li>
                   <li>
                     <a
-                      @click="$router.push({ path: '/newVote' })"
+                      @click="$router.push({ path: '/NewActivity' })"
                       class="dropdown-item"
                     >
-                      <i class="bx bx-group" style="margin-right: 10px"></i>报名
+                      <i class="bx bx-group" style="margin-right: 10px"></i>活动
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      @click="$router.push({ path: '/NewActivity' })"
+                      class="dropdown-item"
+                    >
+                      <i class="bx bx-group" style="margin-right: 10px"></i>内容
                     </a>
                   </li>
                 </ul>
@@ -46,7 +61,7 @@
             <div class="d-flex" style="min-width: 0">
               <span class="flex-shrink-0">[投票]</span>
               <router-link
-                class="h5 text-truncate"
+                class="text-truncate"
                 :to="{ name: 'voteDetail', params: { voteId: post.voteId } }"
               >
                 {{ post.subject }}</router-link
@@ -101,7 +116,7 @@
 <script>
 import UserHouseAuth from "@/components/UserHouseAuth";
 import DashBoard from "@/components/DashBoard";
-
+import { mapState } from "vuex";
 export default {
   data() {
     return {
@@ -145,6 +160,11 @@ export default {
     this.gotoPage(1);
   },
   activated() {},
+  computed: {
+    ...mapState({
+      loginUser: (state) => state.user.loginUser,
+    }),
+  },
   methods: {
     gotoPage(p) {
       this.loadSpace(p - 1);

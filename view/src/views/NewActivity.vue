@@ -9,33 +9,13 @@
           </div>
         </div>
         <div class="row mb-3">
-          <label class="col-sm-12">简介内容</label>
+          <label class="col-sm-12">介绍内容</label>
           <div class="col-sm-12">
             <textarea
               maxlength="225"
               class="form-control"
               v-model="vote.descr"
             />
-          </div>
-        </div>
-        <div class="row">
-          <div class="col mb-3">
-            <div class="mb-1">投票选项</div>
-            <div class="input-group mb-3" v-for="(opt, i) in voteOpts" :key="i">
-              选项{{ i + 1 }}:
-              <input class="form-control" v-model="voteOpts[i].name" />
-              <button
-                type="button"
-                class="btn-close ms-1"
-                aria-label="Close"
-                @click="voteOpts.length > 1 && voteOpts.splice(i, 1)"
-              ></button>
-            </div>
-            <div>
-              <button class="btn-sm" @click="voteOpts.push({ name: '' })">
-                添加选项
-              </button>
-            </div>
           </div>
         </div>
 
@@ -55,25 +35,6 @@
               type="date"
               v-model="vote.endDate"
             />
-          </div>
-        </div>
-
-        <div class="row mb-3">
-          <div class="col">
-            <label>最少选择:</label>
-            <select v-model="vote.minSelect" class="form-select">
-              <option v-for="i in voteOpts.length" :key="i">{{ i }}</option>
-            </select>
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col">
-            <label>最多选择:</label>
-            <select v-model="vote.maxSelect" class="form-select">
-              <template v-for="i in voteOpts.length">
-                <option v-if="i >= vote.minSelect" :key="i">{{ i }}</option>
-              </template>
-            </select>
           </div>
         </div>
         <div class="text-end">

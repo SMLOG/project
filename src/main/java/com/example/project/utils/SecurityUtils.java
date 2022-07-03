@@ -29,12 +29,23 @@ public class SecurityUtils {
 
 	}
 	
+	public static UserVo getCurrentUser() {
+		if(StpUtil.isLogin()) {
+			UserVo userVo = (UserVo) StpUtil.getSession().get("user");
+			
+			return userVo;
+		}
+		return null;
+
+	}
+	
 	public static Map<String, Object> bindUserToSession(UserVo user) {
 		
         StpUtil.login(user.getUserName(),true);
         Map<String, Object> result = new HashMap<>();
         result.put("token", StpUtil.getTokenInfo());
         result.put("user", user);
+        user.setMask(true);
         StpUtil.getSession().set("user", user);
         return result;
 	}

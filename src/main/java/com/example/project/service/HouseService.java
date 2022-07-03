@@ -62,6 +62,8 @@ public class HouseService {
 	public List<House> getHouseList() {
 		return houseDao.findAll();
 	}
+	
+	
 
 	public Object userBindHouses(List<House> houses) {
 		Integer userId = SecurityUtils.getCurrentUserId();
@@ -232,7 +234,10 @@ public class HouseService {
 				userMap = new HashMap<String,Object>();
 				retUser.add(userMap);
 				userMap.put("list", userHouseList);
-				User user = userDao.findById(userHouse.getUserId()).get();
+				Optional<User> userOpt = userDao.findById(userHouse.getUserId());
+				
+				if(userOpt.isEmpty())continue;
+				User user = userOpt.get();
 
 				
 				UserVo userVo = new UserVo();
@@ -255,7 +260,9 @@ public class HouseService {
 				vo.setBinderUsers(new ArrayList<UserVo>());
 				for(String id:userIds) {
 					if(!id.equals("")) {
-						User user = userDao.findById(Integer.parseInt(id)).get();
+						Optional<User> userOpt = userDao.findById(Integer.parseInt(id));
+						if(userOpt.isEmpty())continue;
+						User user = userOpt.get();
 						UserVo userVo = new UserVo();
 						userVo.setId(user.getUserId());
 						userVo.setNickName(user.getNickName());

@@ -7,17 +7,17 @@
 package com.example.project.service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,7 +26,6 @@ import com.example.project.dao.UserDao;
 import com.example.project.model.SysParam;
 import com.example.project.model.User;
 import com.example.project.utils.Rest;
-import com.example.project.utils.ResultStatus;
 import com.example.project.utils.ReturnCodeEnum;
 import com.example.project.utils.SecurityUtils;
 import com.example.project.vobean.UserVo;
@@ -39,6 +38,10 @@ public class UserService {
 
 	@Autowired
 	private SysParamDao sysParamDao;
+	
+	
+	@Autowired
+	private HouseService houseService;
 
 	@Resource
 	private PasswordEncoder passwordEncoder;  //注入bcryct加密
@@ -123,9 +126,9 @@ public class UserService {
 		if (userOpt.isPresent()) {
 
 			User user = userOpt.get();
-			if (user.getPwd().equals(userVo.getOldPwd())) {
+			if (passwordEncoder.matches(userVo.getOldPwd(), user.getPwd())) {
 
-				user.setPwd(userVo.getPwd());
+				user.setPwd(passwordEncoder.encode(userVo.getPwd()));
 				userDao.save(user);
 
 				return Rest.success();
@@ -135,6 +138,30 @@ public class UserService {
 		}
 
 		return Rest.fail();
+	}
+
+	public Rest unRegist(@Valid UserVo userVo) {
+		
+		Optional<User> userOpt = userDao.findById(SecurityUtils.getCurrentUserId());
+		if(passwordEncoder.matches(userVo.getPwd(), userOpt.get().getPwd())) {
+			
+			houseService.unBindUserHouses();
+			
+			userDao.delete(userOpt.get());
+			
+			return Rest.success("注销成功.");
+
+		}else return Rest.fail("密码错误。");
+	}
+
+	public Rest getUsersIdUserName() {
+		
+		List<User> userList = userDao.findAll();
+		Map<Integer,String> map = new HashMap<Integer,String>();
+		userList.forEach(u->{
+			map.put(u.getUserId(), UserVo.maskValue(u.getUserName()));
+		});
+		return Rest.success(map);
 	}
 
 }

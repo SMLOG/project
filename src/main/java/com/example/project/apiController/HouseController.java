@@ -21,6 +21,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.example.project.model.House;
+import com.example.project.model.User;
 import com.example.project.model.UserHouse;
 import com.example.project.model.Vote;
 import com.example.project.model.VoteOpt;
@@ -29,6 +30,7 @@ import com.example.project.utils.Rest;
 import com.example.project.utils.ReturnCodeEnum;
 import com.example.project.utils.SecurityUtils;
 import com.example.project.vobean.UserHouseVo;
+import com.example.project.vobean.UserVo;
 
 @RestController
 @RequestMapping("/api")
@@ -85,6 +87,8 @@ public class HouseController {
 	@RequestMapping("/authReq.json")
 	public Rest getAuthRequests() {
 		
+		UserVo userVo = SecurityUtils.getCurrentUser();
+		if(userVo == null || userVo.getStatus().intValue() == User.PENDING)return Rest.fail();
 		return Rest.success(houseService.getAuthRequests());
 
 	}

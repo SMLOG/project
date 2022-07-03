@@ -128,7 +128,9 @@
                       </div>
                     </div>
                     <p class="text-muted font-size-sm text-start mt-3">
-                      <a class="btn btn-warning btn-sm">注销账号</a>
+                      <router-link class="btn btn-warning btn-sm" to="unRegist">
+                        >注销账号</router-link
+                      >
                     </p>
                   </div>
                 </div>
@@ -335,6 +337,7 @@ export default {
           this.$router.push("/login");
         });
     },
+
     changePass() {
       this.$axios
         .post("/changePass", this.loginUser)
@@ -391,7 +394,7 @@ export default {
       if (checks.length > 0) {
         if (
           !confirm(
-            checks.map((e) => e.roomNo).join(",") +
+            checks.map((e) => e.buildNo + "栋 " + e.roomNo).join(",") +
               " 已经有人绑定,确定要继续吗？"
           )
         )

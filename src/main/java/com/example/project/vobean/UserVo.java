@@ -29,7 +29,12 @@ public class UserVo {
 	
 	public String getUserName() {
 		
-		return this.userName!=null&&mask && this.userName.length()>=4  ? this.userName.substring(this.userName.length()-4):this.userName;
+		return this.userName!=null&&mask ? maskValue(this.userName):
+					this.userName;
+	}
+	
+	public static String maskValue(String value) {
+		return value!=null && value.length() >= 4 ? "***" + value.substring(value.length() - 4) : value;
 	}
 
 }

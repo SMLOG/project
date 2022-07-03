@@ -2,7 +2,10 @@
   <div class="page-content">
     <div class="card mb-3">
       <div class="card-body">
-        <a class="btn btn-sm btn-primary" v-if="houses.length == 0"
+        <a
+          class="btn btn-sm btn-primary"
+          v-if="houses.length == 0"
+          @click="showBatch = !showBatch"
           >模版批量生成房屋信息</a
         >
         <div>
@@ -28,7 +31,13 @@
                   }}</span>
                   <span v-else>无</span>
                 </td>
-                <td></td>
+                <td>
+                  <div v-if="h.binderIds">
+                    <div v-for="id in h.binderIds.split(',')" :key="id">
+                      {{ userMap[id] }}
+                    </div>
+                  </div>
+                </td>
 
                 <td>
                   <span v-if="h.ownerId">是</span>
@@ -54,7 +63,7 @@
 import HouseInit from "@/components/HouseInit";
 export default {
   data() {
-    return { showBatch: 0, houses: [], selectHouseIds: [] };
+    return { showBatch: 0, houses: [], selectHouseIds: [], userMap: { 0: "" } };
   },
 
   mounted() {
@@ -64,6 +73,9 @@ export default {
   activated() {},
   methods: {
     loadHouseList() {
+      this.$axios.post("/userMap").then((r) => {
+        if (!r.data.code) Object.assign(this.userMap, r.data.data);
+      });
       this.$axios.get("/houses").then((r) => {
         this.houses.length = 0;
         this.houses.push(...r.data.data);

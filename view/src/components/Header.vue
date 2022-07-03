@@ -4,7 +4,7 @@
     <div class="topbar d-flex align-items-center">
       <nav class="navbar navbar-expand d-flex justify-content-between">
         <div>
-          <ol class="breadcrumb">
+          <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item">
               <router-link :to="'/index/1'">
                 <i class="bx bx-home">首页</i></router-link
@@ -32,7 +32,7 @@
               <div class="user-info">
                 <p class="user-name mb-0">
                   <font-awesome-icon icon="fa-solid fa-user" size="xs" />
-                  {{ userName }}({{ nickName }})
+                  {{ loginUser.userName }}({{ loginUser.nickName }})
                 </p>
               </div>
             </a>
@@ -90,9 +90,7 @@ export default {
       .then((r) => {
         if (r.data.code == 20001) this.$router.push("/login");
         else if (r.data.code == 0) {
-          this.userName = r.data.data.userName;
-          this.nickName = r.data.data.nickName;
-          this.$store.commit("userId", r.data.data.userId);
+          this.$store.commit("loginUser", r.data.data);
         }
       })
       .catch(() => {

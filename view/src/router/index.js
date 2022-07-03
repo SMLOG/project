@@ -17,7 +17,12 @@ const routes = [
       {
         path: "/profile",
         name: "用户资料",
-        component: () => import("@/views/UserProfile"),
+        component: () => import("@/views/user/UserProfile"),
+      },
+      {
+        path: "/unRegist",
+        name: "注销账号",
+        component: () => import("@/views/user/unRegist"),
       },
       { path: "/admin/users", component: () => import("@/views/admin/Users") },
       {
@@ -40,10 +45,30 @@ const routes = [
         component: () => import("@/views/VoteDetail"),
       },
       {
+        path: "/newActivity",
+        name: "newActivity",
+        meta: { name: "发起活动" },
+
+        component: () => import("@/views/NewActivity"),
+      },
+      {
         path: "/houses",
         name: "houses",
         meta: { name: "房屋信息" },
         component: () => import("@/views/Houses"),
+      },
+
+      {
+        path: "/costs/:period",
+        name: "costs",
+        meta: { name: "费用分摊" },
+        component: () => import("@/views/Costs"),
+      },
+      {
+        path: "/editCost/:period",
+        name: "editCost",
+        meta: { name: "费用分摊" },
+        component: () => import("@/views/EditCost"),
       },
     ],
   },
