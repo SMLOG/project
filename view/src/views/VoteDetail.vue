@@ -3,14 +3,10 @@
     <div class="card">
       <div class="card-body">
         <div class="mb-3">
-          <div class="h3">
-            {{ vote.subject }}
-          </div>
+          <div class="h3">{{ vote.subject }}({{ typeFmt(vote.userType) }})</div>
         </div>
         <div class="row mb-3">
-          <div class="col-sm-12 text-muted">
-            开始时间:{{ vote.startDate }} 结束时间:{{ vote.endDate }}
-          </div>
+          <div class="col-sm-12 text-muted">截止日期:{{ vote.endDate }}</div>
         </div>
         <div class="row mb-3">
           <div class="col-sm-12">
@@ -38,7 +34,7 @@
                 <input
                   v-model="opt.checked"
                   :disabled="
-                    voteLogs.length ||
+                    myLogs.length ||
                     (!opt.checked &&
                       vote.maxSelect <=
                         voteOpts.filter((e) => e.checked).length)
@@ -66,23 +62,29 @@
               @click="voteIt()"
               class="btn btn-primary btn-sm"
               :class="{
-                disabled: voteLogs.length > 0,
-                'btn-secondary': voteLogs.length > 0,
+                disabled: status > 0 || myLogs.length > 0,
+                'btn-secondary': status > 0 || myLogs.length > 0,
               }"
             >
               <span
                 v-if="voting"
                 class="spinner-border spinner-border-sm"
               ></span>
-              {{ voteLogs.length == 0 ? "投票" : "你已投票" }}
+              {{
+                status > 0
+                  ? "已经结束"
+                  : myLogs.length == 0
+                  ? "投票"
+                  : "你已投票"
+              }}
             </a>
 
             <a
               class="btn btn-primary btn-sm"
               data-bs-toggle="modal"
-              data-bs-target="#viewAllLogs"
+              @click="viewVoteHis('#viewAllLogs')"
             >
-              查看全部投票记录
+              查看投票记录
             </a>
           </div>
         </div>
@@ -105,6 +107,8 @@
                   <thead>
                     <tr>
                       <th scope="col">#</th>
+                      <th>投票人</th>
+                      <th>日期</th>
                       <th scope="col">已选择</th>
                     </tr>
                   </thead>
@@ -114,6 +118,8 @@
                       :key="userLogs[0].id"
                     >
                       <th scope="row">{{ i + 1 }}</th>
+                      <td>{{ getUserHouse(userLogs[0].voteUserId) }}</td>
+                      <td>{{ userLogs[0].createDate.split("T")[0] }}</td>
                       <td>
                         <div v-for="log in userLogs" :key="log.id">
                           {{ optsMap[log.voteOpdId].name }}
@@ -137,6 +143,7 @@ export default {
     return {
       voting: 0,
       items: [],
+      status: 0,
       vote: {
         subject: "",
         descr: "",
@@ -149,9 +156,11 @@ export default {
         canHideName: 0,
       },
       voteOpts: [],
-      voteLogs: [],
+      myLogs: [],
       logs: [],
       optsMap: {},
+      userIdHouseMap: {},
+      houseIdMap: {},
     };
   },
 
@@ -160,6 +169,22 @@ export default {
   },
   activated() {},
   methods: {
+    typeFmt(typeId) {
+      return typeId == 1 || typeId == 3 ? "一房一票" : "一人一票";
+    },
+    viewVoteHis(id) {
+      if (this.myLogs.length == 0) {
+        alert("你还没投票,只有投票的用户才能查看.");
+      } else $(id).modal("show");
+    },
+    getUserHouse(userId) {
+      if (this.userIdHouseMap[userId])
+        return this.userIdHouseMap[userId]
+          .map((houseId) => this.houseIdMap[houseId])
+          .map((h) => h.roomNo)
+          .join(",");
+      return "";
+    },
     getUserLogs() {
       let ret = [];
       let logs = this.logs.slice().sort((a, b) => {
@@ -195,10 +220,12 @@ export default {
             "/vote/" + this.$route.params.voteId + ".json",
             this.voteOpts.filter((e) => e.checked)
           )
-          .then(() => {
-            this.loadVoteDetail();
+          .then((r) => {
+            if (r.data.code == 0) {
+              this.loadVoteDetail();
 
-            alert("投票成功");
+              alert("投票成功");
+            } else alert(r.data.msg);
           })
           .catch(() => {
             alert("投票失败");
@@ -210,38 +237,48 @@ export default {
       this.$axios
         .get("/vote/" + this.$route.params.voteId + ".json")
         .then((r) => {
-          Object.assign(this.vote, r.data.data.vote);
-          this.voteLogs.length =
-            this.voteLogs.length =
-            this.voteOpts.length =
-              0;
-          this.voteOpts.push(...r.data.data.voteOpts);
-
-          Object.assign(
-            this.optsMap,
-            this.voteOpts.reduce((map, item) => {
-              map[item.optId] = item;
-              return map;
-            }, {})
-          );
-
-          console.log(this.optsMap);
-
-          if (r.data.data.voteLogs.length > 0) {
-            r.data.data.voteOpts.map((e) => {
-              r.data.data.voteLogs.map((ee) => {
-                if (ee.voteOpdId == e.optId) e.checked = 1;
-              });
+          if (r.data.code == 0) {
+            Object.keys(r.data.data).forEach((k) => {
+              if (r.data.data[k] instanceof Array) {
+                this[k].length = 0;
+                this[k].push(...r.data.data[k]);
+              } else if (r.data.data[k] instanceof Object) {
+                Object.assign(this[k], r.data.data[k]);
+              } else this[k] = r.data.data[k];
             });
+
+            Object.assign(
+              this.optsMap,
+              this.voteOpts.reduce((map, item) => {
+                map[item.optId] = item;
+                return map;
+              }, {})
+            );
+
+            if (r.data.data.myLogs.length > 0) {
+              r.data.data.voteOpts.map((e) => {
+                r.data.data.myLogs.map((ee) => {
+                  if (ee.voteOpdId == e.optId) e.checked = 1;
+                });
+              });
+            }
+
+            for (var prop in this.userIdHouseMap) {
+              delete this.userIdHouseMap[prop];
+            }
+            for (let log of this.logs) {
+              if (!this.userIdHouseMap[log.voteUserId]) {
+                this.userIdHouseMap[log.voteUserId] = log.houseIds
+                  .split(",")
+                  .filter((e) => e);
+              }
+            }
+            console.log(this.userIdHouseMap);
           }
-          this.voteLogs.push(...r.data.data.voteLogs);
-          this.logs.length = 0;
-          this.logs.push(...r.data.data.logs);
         });
     },
   },
   watch: {},
 };
 </script>
-<style scoped>
-</style>
+<style scoped></style>

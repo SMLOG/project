@@ -29,4 +29,6 @@ public class VoteLog extends BaseEntity {
 	private Integer voteOpdId;
 	
 	private String remark;
+	private String houseIds;
+
 }

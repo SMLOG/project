@@ -34,22 +34,29 @@ const routes = [
       {
         path: "/newVote",
         name: "newVote",
-        meta: { name: "发起投票" },
+        meta: { name: "选项投票" },
 
         component: () => import("@/views/NewVote"),
       },
       {
         path: "/vote/:voteId",
         name: "voteDetail",
-        meta: { name: "投票详情" },
+        meta: { name: "选项投票详情" },
         component: () => import("@/views/VoteDetail"),
       },
       {
         path: "/newActivity",
         name: "newActivity",
-        meta: { name: "发起活动" },
+        meta: { name: "报名投票" },
 
-        component: () => import("@/views/NewActivity"),
+        component: () => import("@/views/activity/NewActivity"),
+      },
+      {
+        path: "/activity/:activityId",
+        name: "activityDetail",
+        meta: { name: "报名投票详情" },
+
+        component: () => import("@/views/activity/ActivityDetail"),
       },
       {
         path: "/houses",

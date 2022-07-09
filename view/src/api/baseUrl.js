@@ -1,4 +1,4 @@
-let baseUrl = "";
+let baseUrl = "/api";
 switch (
   process.env.NODE_ENV //注意变量名是自定义的
 ) {

@@ -22,18 +22,25 @@ sa-token:
 
 
 spring:
+  resources:
+    static-locations:classpath:/META-INF/resources/
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 30MB
+      max-request-size: 30MB
   config:
     addictional-location: ~/workspace/application-dev.yml
     name: project
   web:
     resources:
-      static-locations: classpath:/static
-  mvc:
-    throw-exception-if-no-handler-found: true
-    view:
-      suffix: .html
-      prefix: /static/
-    static-path-pattern: /static/**
+#      static-locations:classpath:/META-INF/resources/,classpath:/static/
+#  mvc:
+#    throw-exception-if-no-handler-found: true
+#    view:
+#      suffix: .html
+#      prefix: /static/
+#    static-path-pattern: /static/**
   jpa:
     show-sql: true
     hibernate:

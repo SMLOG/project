@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.example.project.utils.Rest;
+import com.example.project.utils.RestException;
 import com.example.project.utils.ReturnCodeEnum;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +27,11 @@ public class GlobalExceptionHandler {
     @ResponseBody
     @ExceptionHandler(value = Exception.class)
     public Rest exceptionHandler(HttpServletRequest request, Exception e) {
-        return Rest.fail(ReturnCodeEnum.SYSTEM_ERROR, e.getCause()!=null ?e.getCause().getMessage():null);
+    	if(e instanceof RestException) {
+    		return ((RestException)(e)).getRest();
+    	}
+    	
+    	return Rest.fail(ReturnCodeEnum.SYSTEM_ERROR, e.getCause()!=null ?e.getCause().getMessage():null);
     }
 
 }

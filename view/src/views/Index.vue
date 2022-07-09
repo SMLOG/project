@@ -4,15 +4,9 @@
     <div class="card">
       <div class="card-body">
         <div
-          class="
-            h5
-            card-title
-            d-flex
-            justify-content-between
-            align-items-center
-          "
+          class="h5 card-title d-flex justify-content-between align-items-center"
         >
-          <span>最近发生</span>
+          <span>最近在进行</span>
 
           <div class="ms-auto">
             <ul class="navbar-nav">
@@ -32,23 +26,18 @@
                       @click="$router.push({ path: '/newVote' })"
                       class="dropdown-item"
                     >
-                      <i class="bx bx-group" style="margin-right: 10px"></i>投票
+                      <i class="bx bx-group" style="margin-right: 10px"></i
+                      >选项投票
                     </a>
                   </li>
+
                   <li>
                     <a
                       @click="$router.push({ path: '/NewActivity' })"
                       class="dropdown-item"
                     >
-                      <i class="bx bx-group" style="margin-right: 10px"></i>活动
-                    </a>
-                  </li>
-                  <li>
-                    <a
-                      @click="$router.push({ path: '/NewActivity' })"
-                      class="dropdown-item"
-                    >
-                      <i class="bx bx-group" style="margin-right: 10px"></i>内容
+                      <i class="bx bx-group" style="margin-right: 10px"></i
+                      >候选投票
                     </a>
                   </li>
                 </ul>
@@ -59,10 +48,10 @@
         <div v-for="(post, i) in posts" :key="i">
           <div class="d-flex justify-content-between align-items-center">
             <div class="d-flex" style="min-width: 0">
-              <span class="flex-shrink-0">[投票]</span>
+              <span class="flex-shrink-0">[{{ map[post.name] }}]</span>
               <router-link
-                class="text-truncate"
-                :to="{ name: 'voteDetail', params: { voteId: post.voteId } }"
+                class="text-truncate ms-2"
+                :to="'/' + post.name + '/' + post.refId"
               >
                 {{ post.subject }}</router-link
               >
@@ -120,19 +109,13 @@ import { mapState } from "vuex";
 export default {
   data() {
     return {
+      map: { vote: "选项投票", activity: "报名投票" },
       posts: [],
       page: 1,
       totalPages: 0,
       startPage: 0,
       hasNext: 0,
       hasPrev: 0,
-      tabs: [
-        { name: "投票讨论" },
-        { name: "房产信息" },
-        { name: "业主大会会议筹备组" },
-        { name: "选举业主委员会" },
-        { name: "首次成立业主大会" },
-      ],
     };
   },
   components: { UserHouseAuth, DashBoard },
@@ -167,11 +150,11 @@ export default {
   },
   methods: {
     gotoPage(p) {
-      this.loadSpace(p - 1);
+      this.loadPostList(p - 1);
       this.$router.push({ params: { pageId: p } });
     },
-    loadSpace(p) {
-      this.$axios.get("/votes/?page=" + p).then((r) => {
+    loadPostList(p) {
+      this.$axios.get("/posts/?page=" + p).then((r) => {
         if (r.data.code == 0) {
           this.posts.length = 0;
           this.posts.push(...r.data.data.content);

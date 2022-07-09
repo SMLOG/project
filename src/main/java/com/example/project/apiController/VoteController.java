@@ -48,7 +48,7 @@ public class VoteController {
 		 JSONArray array = jsonObj.getJSONArray("voteOpts");
 		List<VoteOpt> voteOpts = array.toJavaList(VoteOpt.class);
 
-		return Rest.success(voteService.newVote(vote,voteOpts));
+		return voteService.newVote(vote,voteOpts);
 
 	}
 	
@@ -72,9 +72,9 @@ public class VoteController {
 	}
 	
 	@RequestMapping(path="/api/vote/{voteId}.json",method=RequestMethod.POST)
-	public Rest vote(@PathVariable Integer voteId,@RequestBody List<VoteOpt> opts) {
+	public Rest vote(@PathVariable Integer voteId,@RequestBody List<VoteOpt> opts) throws Exception {
 
-		return Rest.success(voteService.vote(voteId,opts));
+		return voteService.vote(voteId,opts);
 
 	}
 }

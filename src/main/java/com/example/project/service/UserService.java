@@ -56,7 +56,22 @@ public class UserService {
 			Optional<SysParam> paramOpt = sysParamDao.findOne(Example.of(param));
 			if (!paramOpt.isPresent() || paramOpt.get().getValue().equals(userVo.getInviteCode())) {
 
+				
+				if(userVo.getUserName()==null||userVo.getUserName().length()!=11) {
+				
+					return Rest.fail("号码为11位数字！");
+				}
+				if(userVo.getUserName().replaceAll("\\d+", "").length()!=0) {
+					return Rest.fail("号码格式不对，应为11位数字！");
+				}
+				
+				if(userVo.getPwd()==null||userVo.getPwd().length()<6 || userVo.getPwd().length()>8) {
+					return Rest.fail("密码格式不对，应为6～8位数字字母组合！");
+				}
+				
 				User user = new User();
+				
+				
 				user.setUserName(userVo.getUserName());
 				// user.setEmail(userVo.getUserName());
 				
@@ -76,7 +91,7 @@ public class UserService {
 
 					return Rest.success(userVo);
 				}else {
-					return Rest.fail("该手机号码已经注册过了,请登录。");
+					return Rest.fail("该号码已经注册过了,请登录。");
 
 				}
 

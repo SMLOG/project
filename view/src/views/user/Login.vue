@@ -3,98 +3,102 @@
     <div class="container-fluid">
       <div class="row justify-content-center" style="height: 100vh">
         <div class="align-self-center">
-          <b-container fluid class="p-0">
+          <div class="container-fluid p-0">
             <div class="row">
               <div class="col-sm-12 col-md-8 col-lg-6 mx-auto">
-                <b-card>
-                  <div class="card-title text-center h4">登入</div>
-                  <form
-                    class="px-4 py-3 needs-validation"
-                    novalidate
-                    ref="form"
-                  >
-                    <div class="form-group pb-3">
-                      <label for="userName">手机号码</label>
-                      <input
-                        class="form-control"
-                        id="userName"
-                        type="number"
-                        placeholder="手机号码"
-                        v-model="loginUser.userName"
-                        required
-                      />
-                      <div class="invalid-feedback">请输入正确的手机号码.</div>
-                    </div>
-
-                    <div class="form-group pb-3">
-                      <label for="pwd">密码</label>
-                      <input
-                        type="password"
-                        class="form-control"
-                        id="pwd"
-                        v-model="loginUser.pwd"
-                        placeholder="6~8位密码"
-                        required
-                      />
-                      <div class="invalid-feedback">请输入登入密码.</div>
-                    </div>
-
-                    <div class="form-group pb-3">
-                      <label for="pwd2">图片验证码</label>
-                      <input
-                        class="form-control"
-                        id="captcha"
-                        placeholder="图片验证码"
-                        v-model="loginUser.captcha"
-                        required
-                      />
-                      <div class="invalid-feedback">请输入图片验证码.</div>
-
-                      <img ref="captch" @click="getCaptch()" />
-                    </div>
-
-                    <div class="form-group">
-                      <div class="form-check">
+                <div class="card">
+                  <div class="card-body">
+                    <div class="card-title text-center h4">登入(业主投票)</div>
+                    <form
+                      class="px-4 py-3 needs-validation"
+                      novalidate
+                      ref="form"
+                    >
+                      <div class="form-group pb-3">
+                        <label for="userName">手机号码</label>
                         <input
-                          type="checkbox"
-                          class="form-check-input"
-                          id="dropdownCheck"
+                          class="form-control"
+                          id="userName"
+                          type="number"
+                          placeholder="手机号码"
+                          v-model="loginUser.userName"
+                          required
                         />
-                        <label class="form-check-label" for="dropdownCheck">
-                          记住我
-                        </label>
+                        <div class="invalid-feedback">
+                          请输入正确的手机号码.
+                        </div>
                       </div>
-                    </div>
 
-                    <div class="text-center">
-                      <div class="row">
-                        <div class="col">
-                          <router-link to="/forget" class="px-3"
-                            >忘记密码</router-link
-                          >
-                        </div>
-                        <div class="col">
-                          <span>
-                            <span class="text-muted">没有账号?</span
-                            ><router-link to="/reg">注册</router-link></span
-                          >
+                      <div class="form-group pb-3">
+                        <label for="pwd">密码</label>
+                        <input
+                          type="password"
+                          class="form-control"
+                          id="pwd"
+                          v-model="loginUser.pwd"
+                          placeholder="6~8位密码"
+                          required
+                        />
+                        <div class="invalid-feedback">请输入登入密码.</div>
+                      </div>
+
+                      <div class="form-group pb-3">
+                        <label for="pwd2">图片验证码</label>
+                        <input
+                          class="form-control"
+                          id="captcha"
+                          placeholder="图片验证码"
+                          v-model="loginUser.captcha"
+                          required
+                        />
+                        <div class="invalid-feedback">请输入图片验证码.</div>
+
+                        <img ref="captch" @click="getCaptch()" />
+                      </div>
+
+                      <div class="form-group">
+                        <div class="form-check">
+                          <input
+                            type="checkbox"
+                            class="form-check-input"
+                            id="dropdownCheck"
+                          />
+                          <label class="form-check-label" for="dropdownCheck">
+                            记住我
+                          </label>
                         </div>
                       </div>
-                      <div class="row">
-                        <button
-                          @click="processForm()"
-                          type="button"
-                          class="btn btn-primary"
-                        >
-                          登入
-                        </button>
+
+                      <div class="text-center">
+                        <div class="row">
+                          <div class="col">
+                            <router-link to="/forget" class="px-3"
+                              >忘记密码</router-link
+                            >
+                          </div>
+                          <div class="col">
+                            <span>
+                              <span class="text-muted">没有账号?</span
+                              ><router-link to="/reg">注册</router-link></span
+                            >
+                          </div>
+                        </div>
+                        <div class="row">
+                          <button
+                            @click="processForm()"
+                            type="button"
+                            class="btn btn-primary"
+                          >
+                            登入
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  </form>
-                </b-card>
+                    </form>
+                  </div>
+                </div>
               </div>
             </div>
-          </b-container>
+          </div>
         </div>
       </div>
     </div>

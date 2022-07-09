@@ -47,6 +47,8 @@ public class UserController {
 	  private Kaptcha kaptcha;
 	 
 
+
+	  
 	  @GetMapping("/api/public/captcha")
 	  public void render() {
 	    kaptcha.render();

@@ -6,9 +6,7 @@
         <div>
           <ol class="breadcrumb mb-0">
             <li class="breadcrumb-item">
-              <router-link :to="'/index/1'">
-                <i class="bx bx-home">首页</i></router-link
-              >
+              <router-link :to="'/index/1'"> <span>首页</span></router-link>
             </li>
             <li
               v-if="navName"
@@ -48,17 +46,7 @@
                   ><i class="bx bx-user"></i><span>我的资料</span></a
                 >
               </li>
-              <li>
-                <a
-                  class="dropdown-item"
-                  @click="
-                    $router.push({
-                      path: '/profile',
-                    })
-                  "
-                  ><i class="bx bx-user"></i><span>申请成为管理员</span></a
-                >
-              </li>
+
               <li>
                 <div class="dropdown-divider mb-0"></div>
               </li>
@@ -112,4 +100,3 @@ export default {
   },
 };
 </script>
-

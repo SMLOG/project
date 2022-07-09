@@ -87,6 +87,7 @@ public class HouseService {
 							houseEo.setBinderIds(houseEo.getBinderIds() + "," + userId);
 						
 						houseDao.save(houseEo);
+
 					}
 				}
 			}
@@ -103,6 +104,8 @@ public class HouseService {
 			int result = rand.nextInt(900000) + 100000;
 			User user = userDao.findById(userId).get();
 			user.setAuthNum(result);
+			
+			
 			userDao.save(user);
 
 			SecurityUtils.bindUserToSession(SecurityUtils.userToVo(user));
